@@ -18,6 +18,7 @@ types are aliased to either their UI* implementation (on iOS) or their NS* imple
 	public typealias NSUITapGestureRecognizer = UITapGestureRecognizer
 	public typealias NSUIPanGestureRecognizer = UIPanGestureRecognizer
 #if !os(tvOS)
+    public typealias NSUILongPressGestureRecognizer = UILongPressGestureRecognizer
     public typealias NSUIPinchGestureRecognizer = UIPinchGestureRecognizer
     public typealias NSUIRotationGestureRecognizer = UIRotationGestureRecognizer
 #endif
@@ -57,6 +58,28 @@ types are aliased to either their UI* implementation (on iOS) or their NS* imple
             return super.location(ofTouch: touch, in: inView)
         }
     }
+    
+#if !os(tvOS)
+    extension NSUILongPressGestureRecognizer
+    {
+        final func nsuiNumberOfTouches() -> Int
+        {
+            return numberOfTouches
+        }
+        
+        final var nsuiNumberOfTapsRequired: Int
+            {
+            get
+            {
+                return self.numberOfTapsRequired
+            }
+            set
+            {
+                self.numberOfTapsRequired = newValue
+            }
+        }
+    }
+#endif
     
 #if !os(tvOS)
     extension NSUIRotationGestureRecognizer
@@ -225,6 +248,7 @@ types are aliased to either their UI* implementation (on iOS) or their NS* imple
 	public typealias NSUIGestureRecognizerState = NSGestureRecognizerState
 	public typealias NSUIGestureRecognizerDelegate = NSGestureRecognizerDelegate
 	public typealias NSUITapGestureRecognizer = NSClickGestureRecognizer
+    public typealias NSUILongPressGestureRecognizer = NSPressGestureRecognizer
 	public typealias NSUIPanGestureRecognizer = NSPanGestureRecognizer
 	public typealias NSUIPinchGestureRecognizer = NSMagnificationGestureRecognizer
 	public typealias NSUIRotationGestureRecognizer = NSRotationGestureRecognizer
@@ -324,6 +348,14 @@ types are aliased to either their UI* implementation (on iOS) or their NS* imple
 			}
 		}
 	}
+    
+    extension NSUILongPressGestureRecognizer
+    {
+        final func nsuiNumberOfTouches() -> Int
+        {
+            return 1
+        }
+    }
 
 	extension NSUIPanGestureRecognizer
     {
