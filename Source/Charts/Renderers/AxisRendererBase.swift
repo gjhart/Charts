@@ -53,6 +53,12 @@ open class AxisRendererBase: Renderer
         fatalError("renderLimitLines() cannot be called on AxisRendererBase")
     }
     
+    /// Draws the LimitRanges associated with this axis to the screen.
+    @objc open func renderLimitRanges(context: CGContext)
+    {
+        fatalError("renderLimitRanges() cannot be called on AxisRendererBase")
+    }
+    
     /// Computes the axis values.
     /// - parameter min: the minimum value in the data object for this axis
     /// - parameter max: the maximum value in the data object for this axis

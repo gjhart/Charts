@@ -458,4 +458,142 @@ open class XAxisRenderer: AxisRendererBase
         }
     }
 
+    open override func renderLimitRanges(context: CGContext)
+    {
+        guard
+            let xAxis = self.axis as? XAxis,
+            let transformer = self.transformer
+            else { return }
+        
+        var limitRanges = xAxis.limitRanges
+        
+        if limitRanges.count == 0
+        {
+            return
+        }
+        
+        let trans = transformer.valueToPixelMatrix
+        
+        var startPosition = CGPoint(x: 0.0, y: 0.0)
+        var endPosition = CGPoint(x: 0.0, y: 0.0)
+        
+        for i in 0 ..< limitRanges.count
+        {
+            let l = limitRanges[i]
+            
+            if !l.isEnabled
+            {
+                continue
+            }
+            
+            context.saveGState()
+            defer { context.restoreGState() }
+            
+            var clippingRect = viewPortHandler.contentRect
+            clippingRect.origin.x -= l.lineWidth / 2.0
+            clippingRect.size.width += l.lineWidth
+            context.clip(to: clippingRect)
+            
+            startPosition.x = CGFloat(l.start)
+            startPosition.y = 0.0
+            startPosition = startPosition.applying(trans)
+            
+            endPosition.x = CGFloat(l.end)
+            endPosition.y = 0.0
+            endPosition = endPosition.applying(trans)
+            
+            renderLimitRangeLines(context: context, limitRange: l, start: startPosition, end: endPosition)
+            renderLimitRangeLabel(context: context, limitRange: l, position: endPosition, yOffset: 2.0 + l.yOffset)
+        }
+    }
+    
+    @objc open func renderLimitRangeLines(context: CGContext, limitRange: ChartLimitRange, start: CGPoint, end: CGPoint)
+    {
+        
+        context.beginPath()
+        
+        context.move(to: CGPoint(x: start.x, y: viewPortHandler.contentTop))
+        context.addLine(to: CGPoint(x: start.x, y: viewPortHandler.contentBottom))
+
+        context.move(to: CGPoint(x: end.x, y: viewPortHandler.contentTop))
+        context.addLine(to: CGPoint(x: end.x, y: viewPortHandler.contentBottom))
+        
+        context.setStrokeColor(limitRange.lineColor.cgColor)
+        context.setLineWidth(limitRange.lineWidth)
+        if limitRange.lineDashLengths != nil
+        {
+            context.setLineDash(phase: limitRange.lineDashPhase, lengths: limitRange.lineDashLengths!)
+        }
+        else
+        {
+            context.setLineDash(phase: 0.0, lengths: [])
+        }
+        
+        context.strokePath()
+        
+        context.beginPath()
+        context.move(to: CGPoint(x: start.x, y: viewPortHandler.contentTop))
+        let width = end.x - start.x
+        let height = viewPortHandler.contentBottom - viewPortHandler.contentTop
+        let rect = CGRect(x: start.x, y: viewPortHandler.contentTop, width: width, height: height)
+        context.addRect(rect)
+        context.setFillColor(limitRange.fillColor.cgColor)
+        context.setLineWidth(1)
+        context.fillPath()
+    }
+    
+    @objc open func renderLimitRangeLabel(context: CGContext, limitRange: ChartLimitRange, position: CGPoint, yOffset: CGFloat)
+    {
+        
+        let label = limitRange.label
+        
+        // if drawing the limit-value label is enabled
+        if limitRange.drawLabelEnabled && label.count > 0
+        {
+            let labelLineHeight = limitRange.valueFont.lineHeight
+            
+            let xOffset: CGFloat = limitRange.lineWidth + limitRange.xOffset
+            
+            if limitRange.labelPosition == .rightTop
+            {
+                ChartUtils.drawText(context: context,
+                                    text: label,
+                                    point: CGPoint(
+                                        x: position.x + xOffset,
+                                        y: viewPortHandler.contentTop + yOffset),
+                                    align: .left,
+                                    attributes: [NSAttributedString.Key.font: limitRange.valueFont, NSAttributedString.Key.foregroundColor: limitRange.valueTextColor])
+            }
+            else if limitRange.labelPosition == .rightBottom
+            {
+                ChartUtils.drawText(context: context,
+                                    text: label,
+                                    point: CGPoint(
+                                        x: position.x + xOffset,
+                                        y: viewPortHandler.contentBottom - labelLineHeight - yOffset),
+                                    align: .left,
+                                    attributes: [NSAttributedString.Key.font: limitRange.valueFont, NSAttributedString.Key.foregroundColor: limitRange.valueTextColor])
+            }
+            else if limitRange.labelPosition == .leftTop
+            {
+                ChartUtils.drawText(context: context,
+                                    text: label,
+                                    point: CGPoint(
+                                        x: position.x - xOffset,
+                                        y: viewPortHandler.contentTop + yOffset),
+                                    align: .right,
+                                    attributes: [NSAttributedString.Key.font: limitRange.valueFont, NSAttributedString.Key.foregroundColor: limitRange.valueTextColor])
+            }
+            else
+            {
+                ChartUtils.drawText(context: context,
+                                    text: label,
+                                    point: CGPoint(
+                                        x: position.x - xOffset,
+                                        y: viewPortHandler.contentBottom - labelLineHeight - yOffset),
+                                    align: .right,
+                                    attributes: [NSAttributedString.Key.font: limitRange.valueFont, NSAttributedString.Key.foregroundColor: limitRange.valueTextColor])
+            }
+        }
+    }
 }
