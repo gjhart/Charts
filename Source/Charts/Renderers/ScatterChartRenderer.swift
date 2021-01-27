@@ -183,7 +183,8 @@ open class ScatterChartRenderer: LineScatterCandleRadarRenderer
                         context.drawImage(icon,
                                           atCenter: CGPoint(x: pt.x + iconsOffset.x,
                                                           y: pt.y + iconsOffset.y),
-                                          size: icon.size)
+                                          size: CGSize(width: 25,
+                                                       height: 25))
                     }
                 }
             }
