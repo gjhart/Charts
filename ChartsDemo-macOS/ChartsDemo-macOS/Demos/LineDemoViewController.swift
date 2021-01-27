@@ -40,6 +40,9 @@ open class LineDemoViewController: NSViewController
         self.lineChartView.gridBackgroundColor = NSUIColor.white
 
         self.lineChartView.chartDescription.text = "Linechart Demo"
+        
+        let limitRange = ChartLimitRange(start: 2, end: 6, label: "1st RHS Window");
+        self.lineChartView.xAxis.addLimitRange(limitRange)
     }
     
     override open func viewWillAppear()

@@ -453,4 +453,9 @@ open class YAxisRenderer: NSObject, AxisRenderer
             axis.centeredEntries.append(contentsOf: axis.entries.map { $0 + offset })
         }
     }
+    
+    @objc open func renderLimitRanges(context: CGContext)
+    {
+        // does not conform
+    }
 }

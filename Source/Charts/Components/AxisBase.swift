@@ -62,6 +62,9 @@ open class AxisBase: ComponentBase
     /// array of limitlines that can be set for the axis
     private var _limitLines = [ChartLimitLine]()
     
+    /// array of limitranges that can be set for the axis
+    private var _limitRanges = [ChartLimitRange]()
+    
     /// Are the LimitLines drawn behind the data or in front of the data?
     ///
     /// **default**: false
@@ -283,6 +286,37 @@ open class AxisBase: ComponentBase
         return _limitLines
     }
     
+    /// Adds a new ChartLimitLine to this axis.
+    @objc open func addLimitRange(_ range: ChartLimitRange)
+    {
+        _limitRanges.append(range)
+    }
+    
+    /// Removes the specified ChartLimitLine from the axis.
+    @objc open func removeLimitRange(_ range: ChartLimitRange)
+    {
+        for i in 0 ..< _limitRanges.count
+        {
+            if _limitRanges[i] === range
+            {
+                _limitRanges.remove(at: i)
+                return
+            }
+        }
+    }
+    
+    /// Removes all LimitLines from the axis.
+    @objc open func removeAllLimitRanges()
+    {
+        _limitRanges.removeAll(keepingCapacity: false)
+    }
+    
+    /// - returns: The LimitRanges of this axis.
+    @objc open var limitRanges : [ChartLimitRange]
+    {
+        return _limitRanges
+    }
+
     // MARK: Custom axis ranges
     
     /// By calling this method, any custom minimum value that has been previously set is reseted, and the calculation is done automatically.

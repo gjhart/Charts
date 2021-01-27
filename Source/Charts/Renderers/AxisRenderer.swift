@@ -34,6 +34,9 @@ public protocol AxisRenderer: Renderer {
 
     /// Draws the LimitLines associated with this axis to the screen.
     func renderLimitLines(context: CGContext)
+    
+    /// Draws the LimitRanges associated with this axis to the screen.
+    func renderLimitRanges(context: CGContext)
 
     /// Computes the axis values.
     /// - parameter min: the minimum value in the data object for this axis
